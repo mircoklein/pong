@@ -1,3 +1,5 @@
+/*globals predictPosition doAI*/
+
 var canvas = document.getElementById('pong');
 var ctx = canvas.getContext('2d');
 var x = 20;
@@ -25,6 +27,20 @@ var keys = {
 	rightUp: false,
 	rightDown: false 
 };
+var ballPosition = [];
+var counter = 0;
+var timeLimit = 40;
+var timeDifference = 5;
+var posDifference = 25;
+
+var predictedPosition;
+var resultPosition;
+var paddleAiIsMoving = false;
+var direction;
+var aiStepSize;
+var aiDx;
+var aiDy;
+
 document.addEventListener('keydown', makeKeyHandler(39, 37, 'leftUp', 'leftDown', keys, true), false);
 document.addEventListener('keyup', makeKeyHandler(39, 37, 'leftUp', 'leftDown', keys, false), false);
 document.addEventListener('keydown', keydHandler, false);
@@ -118,9 +134,8 @@ function drawScore2 () {
 }
 
 
-
-
 function draw () {
+  counter = counter + 1;
   ctx.clearRect(0, 0, canvas.width, canvas.height); 
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -134,6 +149,46 @@ function draw () {
 	}
   drawPaddle(paddleR_X, paddleR_Y);
   drawPaddle(paddleL_X, paddleL_Y);
+
+  if (ballIsMoving) {
+    ballPosition.push({x: x, y: y});
+  }
+
+  if (ballPosition.length === 2) {
+    predictedPosition = predictPosition(paddleR_X, ballPosition[0], ballPosition[1]);
+    ballPosition = [];
+    if (aiDx - dx !== 0 || aiDy - dy !== 0) paddleAiIsMoving = false;
+  }
+
+  if (predictedPosition !== undefined && paddleAiIsMoving === false) {
+    resultPosition = doAI({
+      yPos: predictedPosition.y,
+      counter: counter,
+      timeLimit: timeLimit,
+      timeDifference: timeDifference,
+      posDifference: posDifference
+    });
+
+    if (paddleR_Y > resultPosition) direction = -1;
+    if (paddleR_Y < resultPosition) direction = 1;
+
+    aiDx = dx;
+    aiDy = dy;
+  }
+
+
+  if (resultPosition !== undefined && paddleR_Y !== resultPosition) {
+    paddleAiIsMoving = true;
+    var stepDifference = Math.abs(paddleR_Y - resultPosition);
+    if (stepDifference < 5) {
+      aiStepSize = stepDifference;
+    } else {
+      aiStepSize = 5;
+    }
+
+    paddleR_Y = paddleR_Y + (aiStepSize * direction);
+  }
+
   if (keys.leftDown && (paddleL_Y < canvas.height-paddleHeight)) {
     paddleL_Y = paddleL_Y + 5;
    
@@ -152,12 +207,7 @@ function draw () {
   // if(downPressed && (paddleR_Y < canvas.height - paddleHeight)) {
   //   paddleR_Y = paddleR_Y + 5;
     
-  // }
-  
 
-  if (ballIsMoving === true ) {
-  	paddleR_Y = y - paddleHeight/2;
-  }
   
   if(ballIsMoving === false || ballIsMoving === undefined) {
   	if (leftIsActive === true ){
@@ -209,14 +259,3 @@ function draw () {
  
 
 }
-
-
-
-
-
-
-
-
-
- 
-setInterval(draw, 10);

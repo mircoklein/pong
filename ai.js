@@ -17,31 +17,19 @@ function positionAi(yPos, randomThrow, difference) {
   return yPos;
 }
 
-
-
-
-function aiMovementModifier(acceleration, randomThrow, difference) {
-  if (randomThrow === 6) acceleration = acceleration + difference;
-  if (randomThrow === 1 || randomThrow === 2) acceleration = acceleration - difference;
-  return acceleration;
-}
-
 function doAI(info) {
   var timeCounter = info.counter;
   var timeLimit = info.timeLimit;
   var yPos = info.yPos;
   var posDifference = info.posDifference;
-  var acceleration = info.acceleration;
-  var accDifference = info.accDifference;
   var timeDifference = info.timeDifference;
-  var result = { acceleration: void 0, yPos: void 0 };
+  var newPosition = undefined;
 
   if (reactionTimeAI(timeCounter, timeLimit, throwDice(), timeDifference)) {
-    result.yPos = positionAi(yPos, throwDice(), posDifference);
-    result.acceleration = aiMovementModifier(acceleration, throwDice(), accDifference);
+    newPosition = positionAi(yPos, throwDice(), posDifference);
   }
 
-  return result;
+  return newPosition;
 }
 
 function predictPosition(paddleX, p, q) {
@@ -96,30 +84,6 @@ describe('Pong Artifical Intelligence', function () {
       var difference = 5;
       expect(positionAi(yPos, 1, difference)).toBe(yPos - difference);
       expect(positionAi(yPos, 2, difference)).toBe(yPos - difference);
-    });
-  });
-
-  // Bewegungsmodifikatorfunktion
-  describe('movement modifier', function () {
-    var acceleration = 3;
-    var difference = 2;
-    it('should return a number', function () {
-      expect(typeof aiMovementModifier(acceleration)).toBe('number');
-    });
-
-    it('should return acceleration if dice is 3,4,5', function () {
-      expect(aiMovementModifier(acceleration, 3, difference)).toBe(acceleration);
-      expect(aiMovementModifier(acceleration, 4, difference)).toBe(acceleration);
-      expect(aiMovementModifier(acceleration, 5, difference)).toBe(acceleration);
-    });
-
-    it('should return acceleration + difference if dice is 6', function () {
-      expect(aiMovementModifier(acceleration, 6, difference)).toBe(acceleration + difference);
-    });
-
-    it('should return acceleration - difference if dice is 1, 2', function () {
-      expect(aiMovementModifier(acceleration, 1, difference)).toBe(acceleration - difference);
-      expect(aiMovementModifier(acceleration, 2, difference)).toBe(acceleration - difference);
     });
   });
 
