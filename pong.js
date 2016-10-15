@@ -1,4 +1,5 @@
-/*globals predictPosition doAI*/
+function pong (){
+  /*globals predictPosition doAI*/
 
 var canvas = document.getElementById('pong');
 var ctx = canvas.getContext('2d');
@@ -258,4 +259,7 @@ function draw () {
       
  
 
+}
+
+setInterval(draw, 10);
 }
