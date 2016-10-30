@@ -6,8 +6,9 @@
 </head>
 
 <body ng-app="pong">
-	<div ng-controller="CanvasController as canvas"><label><input type="radio" name="Player" value="true" ng-model="Spieler" ng-click="canvas.start()"/>1 Player</label>
-		<label><input type="radio" name="Player" value="false" ng-model="Spieler" ng-click="canvas.start()"/>2 Player</label> {{Spieler}}
+	<div ng-controller="CanvasController as canvas">
+		<label><input type="radio" name="Player" value="true" ng-model="Spieler" ng-click="canvas.start()" ng-disabled="canvas.disableRadios"/>1 Player</label>
+		<label><input type="radio" name="Player" value="false" ng-model="Spieler" ng-click="canvas.start()" ng-disabled="canvas.disableRadios"/>2 Player</label> {{Spieler}}
 		<p ng-if="selected">test</p>
 		<canvas id='pong' width='700' height='500' ></canvas>
 	</div>
