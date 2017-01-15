@@ -42,6 +42,31 @@ var aiStepSize;
 var aiDx;
 var aiDy;
 
+var mouse = {
+  y: 0,
+  x: 0,
+  locked: true
+};
+
+document.addEventListener('pointerlockchange', lockChangeAlert, false);
+
+function lockChangeAlert(){
+  if(document.pointerLockElement === canvas){
+    document.addEventListener("mousemove", updatePosition, false);
+  }else{
+    document.removeEventListener("mousemove", updatePosition, false);
+  }
+}
+
+canvas.addEventListener('click', function togglePointer() {
+  mouse.locked = !mouse.locked;
+  canvas.requestPointerLock();
+});
+
+function updatePosition (event) {
+  mouse.y += event.movementY;
+}
+
 document.addEventListener('keydown', makeKeyHandler(39, 37, 'leftUp', 'leftDown', keys, true), false);
 document.addEventListener('keyup', makeKeyHandler(39, 37, 'leftUp', 'leftDown', keys, false), false);
 document.addEventListener('keydown', keydHandler, false);
@@ -150,6 +175,7 @@ function draw () {
 	}
   drawPaddle(paddleR_X, paddleR_Y);
   drawPaddle(paddleL_X, paddleL_Y);
+  paddleL_Y = mouse.y;
 
   if (ballIsMoving) {
     ballPosition.push({x: x, y: y});
@@ -190,24 +216,7 @@ function draw () {
     paddleR_Y = paddleR_Y + (aiStepSize * direction);
   }
 
-  if (keys.leftDown && (paddleL_Y < canvas.height-paddleHeight)) {
-    paddleL_Y = paddleL_Y + 5;
-   
-  }
-  
-  if (keys.leftUp && paddleL_Y > 0) {
-    paddleL_Y = paddleL_Y - 5;
-    
-  }
-  
-  // if (upPressed &&  paddleR_Y > 0) {
-  //   paddleR_Y = paddleR_Y - 5;
-    
-  //  }
-  
-  // if(downPressed && (paddleR_Y < canvas.height - paddleHeight)) {
-  //   paddleR_Y = paddleR_Y + 5;
-    
+ 
 
   
   if(ballIsMoving === false || ballIsMoving === undefined) {
