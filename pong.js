@@ -9,8 +9,8 @@ ctx.fillStyle = '#000000';
 ctx.fillRect(0, 0, canvas.width,  canvas.height);
 var color = '#ff0000';
 var radius = 10;
-var dx = 2;
-var dy = -0.5;
+var ballSpeedX = 5;
+var ballSpeedY = -0.5;
 var paddleHeight =   75,
     paddleWidth = 10,
     paddleR_X = (canvas.width-paddleWidth),
@@ -32,15 +32,12 @@ var ballPosition = [];
 var counter = 0;
 var timeLimit = 40;
 var timeDifference = 5;
-var posDifference = 25;
+var posDifference = 0;
 
 var predictedPosition;
 var resultPosition;
-var paddleAiIsMoving = false;
 var direction;
-var aiStepSize;
-var aiDx;
-var aiDy;
+var aiSpeedY;
 
 var mouse = {
   y: 0,
@@ -170,8 +167,8 @@ function draw () {
   drawScore ();
   drawScore2();
   if (ballIsMoving === true){
-  	x = x + dx; 
-    y = y + dy;
+  	x = x + ballSpeedX; 
+    y = y + ballSpeedY;
 	}
   drawPaddle(paddleR_X, paddleR_Y);
   drawPaddle(paddleL_X, paddleL_Y);
@@ -183,11 +180,11 @@ function draw () {
 
   if (ballPosition.length === 2) {
     predictedPosition = predictPosition(paddleR_X, ballPosition[0], ballPosition[1]);
+    predictedPosition.y = predictedPosition.y - (paddleHeight/2);
     ballPosition = [];
-    if (aiDx - dx !== 0 || aiDy - dy !== 0) paddleAiIsMoving = false;
   }
 
-  if (predictedPosition !== undefined && paddleAiIsMoving === false) {
+  if (predictedPosition !== undefined) {
     resultPosition = doAI({
       yPos: predictedPosition.y,
       counter: counter,
@@ -198,22 +195,18 @@ function draw () {
 
     if (paddleR_Y > resultPosition) direction = -1;
     if (paddleR_Y < resultPosition) direction = 1;
-
-    aiDx = dx;
-    aiDy = dy;
   }
 
 
   if (resultPosition !== undefined && paddleR_Y !== resultPosition) {
-    paddleAiIsMoving = true;
     var stepDifference = Math.abs(paddleR_Y - resultPosition);
     if (stepDifference < 5) {
-      aiStepSize = stepDifference;
+      aiSpeedY = stepDifference;
     } else {
-      aiStepSize = 5;
+      aiSpeedY = 5;
     }
 
-    paddleR_Y = paddleR_Y + (aiStepSize * direction);
+    paddleR_Y = paddleR_Y + (aiSpeedY * direction);
   }
 
  
@@ -238,14 +231,14 @@ function draw () {
   
   
   
-  if ( y + dy > canvas.height - radius || y + dy < radius ) {
-    dy = -dy;
+  if ( y + ballSpeedY > canvas.height - radius || y + ballSpeedY < radius ) {
+    ballSpeedY = -ballSpeedY;
   } 
     
    
   if( x - radius < paddleL_X + paddleWidth ) {
      if ( y < paddleL_Y + paddleHeight && y > paddleL_Y) {
-		dx = -dx;
+		ballSpeedX = -ballSpeedX;
      } else {
      	score2 = score2 + 1;
         ballIsMoving = false;
@@ -256,7 +249,7 @@ function draw () {
 
  if  ( x + radius > paddleR_X  ){
  	if ( y < paddleR_Y + paddleHeight && y > paddleR_Y ) {
- 		dx = -dx;
+ 		ballSpeedX = -ballSpeedX;
  	} else {
  		score = score + 1;
  		ballIsMoving = false;
