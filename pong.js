@@ -244,7 +244,7 @@ function draw () {
     
    
   if( x - radius < paddleL_X + paddleWidth ) {
-     if ( y < paddleL_Y + paddleHeight && y > paddleL_Y) {
+     if ( y - radius < paddleL_Y + paddleHeight && y + radius > paddleL_Y) {
 		dx = -dx;
      } else {
      	score2 = score2 + 1;
@@ -255,7 +255,7 @@ function draw () {
  }
 
  if  ( x + radius > paddleR_X  ){
- 	if ( y < paddleR_Y + paddleHeight && y > paddleR_Y ) {
+ 	if ( y - radius < paddleR_Y + paddleHeight && y + radius > paddleR_Y ) {
  		dx = -dx;
  	} else {
  		score = score + 1;
