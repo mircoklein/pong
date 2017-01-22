@@ -11,6 +11,7 @@ function throwDice() {
   return getRandom(1, 6);
 }
 
+// Bestimmt Position des paddles
 function positionAi(yPos, randomThrow, difference) {
   if (randomThrow === 1 || randomThrow === 2) yPos = yPos - difference;
   if (randomThrow === 6) yPos = yPos + difference;
